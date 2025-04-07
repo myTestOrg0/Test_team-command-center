@@ -12,3 +12,7 @@ variable "teams" {
   type    = list(string)
   default = ["Test_team"]
 }
+
+variable "GITHUB_KEY" {
+  type = string
+}
