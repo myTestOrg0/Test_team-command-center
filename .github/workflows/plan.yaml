@@ -25,6 +25,4 @@ jobs:
       - name: Terraform plan
         run: |
           terraform plan -out=plan.tfplan
-          echo '```'>>$GITHUB_STEP_SUMMARY
           terraform show -compact-warnings plan.tfplan >> $GITHUB_STEP_SUMMARY
-          echo '```'>>$GITHUB_STEP_SUMMARY
