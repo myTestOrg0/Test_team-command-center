@@ -14,9 +14,9 @@ jobs:
           persist-credentials: false
 
       - name: Install Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
         with:
-          terraform_version: 1.8.4
+          terraform_version: 1.11.3
           terraform_wrapper: false
           
       - name: Teraform init
