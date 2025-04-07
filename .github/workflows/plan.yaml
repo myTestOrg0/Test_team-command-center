@@ -13,9 +13,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install zip
-        run: sudo apt-get -y install zip
-
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v2
         with:
