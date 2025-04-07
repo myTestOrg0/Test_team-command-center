@@ -6,7 +6,10 @@ on:
   workflow_dispatch:  
 jobs:
   plan_terraform_changes:
-    runs-on: ubuntu-latest  
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  
+      security-events: read  
     steps:
       - name: Checkout
         uses: actions/checkout@v3
