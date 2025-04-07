@@ -13,6 +13,6 @@ variable "teams" {
   default = ["Test_team"]
 }
 
-variable "GITHUB_TOKEN" {
+variable "token" {
   type = string
 }
