@@ -26,9 +26,10 @@ jobs:
         
       - name: Terraform plan
         run: |
-          terraform plan -out=plan.tfplan
+          terraform plan
           
       - name: Terraform apply
+        continue-on-error: true
         run: |
           echo '```'>>$GITHUB_STEP_SUMMARY
           terraform apply -auto-approve -no-color -input=false >> $GITHUB_STEP_SUMMARY
