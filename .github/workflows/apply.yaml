@@ -23,10 +23,6 @@ jobs:
           
       - name: Teraform init
         run: terraform init
-        
-      - name: Terraform plan
-        run: |
-          terraform plan
           
       - name: Terraform apply
         continue-on-error: true
@@ -37,7 +33,9 @@ jobs:
       - name: Commit Terraform State files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          USER_NAME: ${{ github.actor }}
         run: |
+          git config user.name $USER_NAME
           git add terraform.tfstate
           git commit -m "Update Terraform state files"
           git push
