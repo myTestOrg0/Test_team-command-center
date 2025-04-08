@@ -30,14 +30,9 @@ jobs:
           echo '```'>>$GITHUB_STEP_SUMMARY
           terraform apply -auto-approve -no-color -input=false >> $GITHUB_STEP_SUMMARY
           echo '```'>>$GITHUB_STEP_SUMMARY
-      - name: Commit Terraform State files
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          USER_NAME: ${{ github.actor }}
-        run: |
-          curl -s -H "Authorization: token $GITHUB_TOKEN" "https://api.github.com/users/$USER_NAME" | jq -r '.email'
-          git config user.name $USER_NAME
-          git config user.email "test@test"
-          git add terraform.tfstate
-          git commit -m "Update Terraform state files"
-          git push
+      - name: Upload Terraform State to Repository
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: terraform-state
+          path: |
+            terraform.tfstate
