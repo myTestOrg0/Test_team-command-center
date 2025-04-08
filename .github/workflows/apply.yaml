@@ -1,0 +1,42 @@
+name: Apply Terraform changes
+env:
+    TF_VAR_token: ${{ secrets.TOKEN }}
+
+on:
+  workflow_dispatch:  
+jobs:
+  apply_terraform_changes:
+    runs-on: ubuntu-latest
+    permissions:
+     contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_version: 1.11.3
+          terraform_wrapper: false
+          
+      - name: Teraform init
+        run: terraform init
+        
+      - name: Terraform plan
+        run: |
+          terraform plan -out=plan.tfplan
+          
+      - name: Terraform apply
+        run: |
+          echo '```'>>$GITHUB_STEP_SUMMARY
+          terraform apply -auto-approve -no-color -input=false >> $GITHUB_STEP_SUMMARY
+          echo '```'>>$GITHUB_STEP_SUMMARY
+      - name: Commit Terraform State files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add terraform.tfstate terraform.tfstate.backup .terraform/
+          git commit -m "Update Terraform state files"
+          git push
