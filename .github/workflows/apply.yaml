@@ -23,10 +23,6 @@ jobs:
           terraform_version: 1.11.3
           terraform_wrapper: false
           
-      - name: Display artifact content
-        run: |
-          cat ./terraform.tfstate
-          
       - name: Teraform init
         run: terraform init
           
