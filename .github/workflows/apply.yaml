@@ -23,17 +23,6 @@ jobs:
           terraform_version: 1.11.3
           terraform_wrapper: false
           
-      - name: Get artifact from previous run
-        run: |
-          ARTIFACT_URL=$(curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.head_run_id }}/artifacts" | \
-            jq -r '.artifacts[0].archive_download_url')
-
-          curl -L -o artifact.zip -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" $ARTIFACT_URL
-
-          unzip artifact.zip -d ./
-          
       - name: Display artifact content
         run: |
           cat ./terraform.tfstate
