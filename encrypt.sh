@@ -11,7 +11,7 @@ if [ -f "$DIR/$FILE" ]; then
         exit 1
     fi
 
-    openssl enc -aes-256-cbc -in "$DIR/$FILE" -out "$DIR/$FILE" -pass "env:ENCRYPTION_KEY"
+    openssl enc -aes-256-cbc -in "terraform.tfstate" -out "terraform.tfstate" -pass "env:ENCRYPTION_KEY"
 
     if [ $? -eq 0 ]; then
         echo "$FILE encrypted"
