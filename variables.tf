@@ -1,6 +1,6 @@
 variable "repositories" {
   type    = list(string)
-  default = ["NewRepoFor"]
+  default = ["NewRepoFor", "TestRepo"]
 }
 
 variable "collaborators" {
