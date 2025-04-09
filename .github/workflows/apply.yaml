@@ -32,12 +32,33 @@ jobs:
       - name: Teraform init
         run: terraform init
         
+      - name: Set up Python
+        uses: actions/setup-python@v5.5
+        with:
+          python-version: '3.12' 
+          
+      - name: Install pip
+        run: |
+         python -m ensurepip --upgrade
+         python -m pip install --upgrade pip
+
+      - name: Install required modules
+        run: |
+         python -m pip install os json requests
+         
+      - name: Run Python script
+        env:
+         TOKEN: ${{ secrets.TOKEN }}
+        run: |
+         python import_helper.py
+        
       - name: Terraform apply
         continue-on-error: true
         run: |
           echo '```'>>$GITHUB_STEP_SUMMARY
           terraform apply -auto-approve -no-color -input=false >> $GITHUB_STEP_SUMMARY
           echo '```'>>$GITHUB_STEP_SUMMARY
+          
       - name: Encrypt Terraform state file
         continue-on-error: true
         env:
