@@ -94,16 +94,16 @@ resource "github_branch_protection" "main_protection" {
 
 
 resource "github_repository_collaborator" "a_repo_collaborator" {
-  for_each = zipmap(var.repositories, var.collaborators)
-  username = each.value
+  for_each = toset(flatten([for repo in var.repositories : [for collab in var.collaborators : "${repo}:${collab}"]]))
+  repository = split(":", each.key)[0]
+  username   = split(":", each.key)[1]
   permission = "push"
-  repository = each.key
 }
 
 resource "github_team_repository" "some_team_repo" {
-  for_each = zipmap(var.repositories, var.teams)
-  team_id    = each.value
-  repository = each.key
+  for_each = toset(flatten([for repo in var.repositories : [for collab in var.teams : "${repo}:${collab}"]]))  
+  repository = split(":", each.key)[0]
+  team_id   = split(":", each.key)[1]
   permission = "push"
 }
 
