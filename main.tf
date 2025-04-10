@@ -4,6 +4,12 @@ import {
   id = each.value
 }
 
+import {
+  for_each = var.repositories
+  to = github_branch_protection.main_protection[each.key]
+  id = "${each.value}:${data.github_repository.repo_info[each.value].default_branch}"
+}
+
 resource "github_repository" "repo" {
   count = length(var.repositories)
   name        = var.repositories[count.index]
@@ -59,7 +65,7 @@ resource "github_repository" "repo" {
 
 resource "github_branch_protection" "main_protection" {
     count = length(var.repositories)
-    repository_id = var.repositories[count.index]
+    repository_id = data.github_repository.repo_info[var.repositories[count.index]].node_id
     allows_deletions                = false
     allows_force_pushes             = false
     enforce_admins                  = true
@@ -68,7 +74,6 @@ resource "github_branch_protection" "main_protection" {
     pattern                         = data.github_repository.repo_info[var.repositories[count.index]].default_branch
     require_conversation_resolution = true
     require_signed_commits          = true
-    required_linear_history         = false
 
     required_pull_request_reviews {
         dismiss_stale_reviews           = true
@@ -84,8 +89,13 @@ resource "github_branch_protection" "main_protection" {
         blocks_creations = true
         push_allowances  = []
     }
+lifecycle {
+  ignore_changes = [
+	required_linear_history
+]
 }
 
+}
 
 resource "github_repository_collaborators" "repo_collaborators" {
   for_each = toset(var.repositories)
@@ -108,5 +118,3 @@ resource "github_repository_collaborators" "repo_collaborators" {
     }
   }
 }
-
-
