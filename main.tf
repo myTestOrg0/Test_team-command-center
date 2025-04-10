@@ -4,12 +4,6 @@ import {
   id = each.value
 }
 
-import {
-  for_each = var.repositories
-  to = github_branch_protection.main_protection[each.key]
-  id = "${each.value}:${data.github_repository.repo_info[each.value].default_branch}"
-}
-
 resource "github_repository" "repo" {
   count = length(var.repositories)
   name        = var.repositories[count.index]
