@@ -23,3 +23,6 @@ variable "teams" {
   ]
 }
 
+variable "token" {
+  type = string
+}
