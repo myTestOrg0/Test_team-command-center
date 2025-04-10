@@ -87,17 +87,26 @@ resource "github_branch_protection" "main_protection" {
 }
 
 
-resource "github_repository_collaborator" "a_repo_collaborator" {
-  for_each = toset(flatten([for repo in var.repositories : [for collab in var.collaborators : "${repo}:${collab}"]]))
-  repository = split(":", each.key)[0]
-  username   = split(":", each.key)[1]
-  permission = "push"
+resource "github_repository_collaborators" "repo_collaborators" {
+  for_each = toset(var.repositories)
+
+  repository = each.value
+
+  dynamic "user" {
+    for_each = var.collaborators
+    content {
+      username   = user.value.username
+      permission = user.value.permission
+    }
+  }
+
+  dynamic "team" {
+    for_each = var.teams
+    content {
+      team_id    = data.github_team.teams[team.value.team_id].id
+      permission = team.value.permission
+    }
+  }
 }
 
-resource "github_team_repository" "some_team_repo" {
-  for_each = toset(flatten([for repo in var.repositories : [for collab in var.teams : "${repo}:${collab}"]]))  
-  repository = split(":", each.key)[0]
-  team_id   = split(":", each.key)[1]
-  permission = "push"
-}
 
