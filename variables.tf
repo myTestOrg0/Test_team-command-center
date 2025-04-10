@@ -4,15 +4,22 @@ variable "repositories" {
 }
 
 variable "collaborators" {
-  type    = list(string)
-  default = ["dumnarix"]
+  type = list(object({
+    username   = string
+    permission = string
+  }))
+  default = [
+    { username = "dumnarix", permission = "admin" },
+  ]
 }
 
 variable "teams" {
-  type    = list(string)
-  default = ["Test_team"]
+  type = list(object({
+    team_id    = string
+    permission = string
+  }))
+  default = [
+    { team_id = "test_team", permission = "pull" },
+  ]
 }
 
-variable "token" {
-  type = string
-}
