@@ -1,6 +1,6 @@
 name: Plan Terraform changes
 env:
-    TF_VAR_token: ${{ secrets.TOKEN }}
+    TF_VAR_GH_APP_TOKEN: ${{ secrets.GH_APP_TOKEN }}
 
 on:
   workflow_dispatch:  
