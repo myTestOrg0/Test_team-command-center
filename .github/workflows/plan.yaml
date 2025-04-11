@@ -7,6 +7,7 @@ on:
 jobs:
   plan_terraform_changes:
     runs-on: ubuntu-latest
+    environment: terraform_main
     steps:
       - name: Checkout
         uses: actions/checkout@v3
