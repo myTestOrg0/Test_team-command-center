@@ -19,9 +19,7 @@ jobs:
         continue-on-error: true
         env:
             ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-        run: |
-         chmod +x ./decrypt.sh
-         ./decrypt.sh
+        run: bash ./decrypt.sh
 
       - name: Install Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
@@ -42,9 +40,7 @@ jobs:
         continue-on-error: true
         env:
             ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-        run: |
-         chmod +x ./encrypt.sh
-         ./encrypt.sh
+        run: bash ./encrypt.sh
           
       - name: Commit Terraform State files
         continue-on-error: true
