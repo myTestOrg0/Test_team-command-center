@@ -17,8 +17,8 @@ jobs:
         continue-on-error: true
         env:
             ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        shell: bash
         run: |
-         chmod +x ./decrypt.sh
          ./decrypt.sh
 
       - name: Install Terraform
