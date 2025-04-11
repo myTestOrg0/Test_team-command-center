@@ -112,12 +112,6 @@ resource "github_branch_protection" "main_protection" {
         blocks_creations = true
         push_allowances  = []
     }
-
-    lifecycle {
-        ignore_changes = [
-	required_linear_history
-       ]
-    }
 }
 
 resource "github_repository_collaborators" "repo_collaborators" {
