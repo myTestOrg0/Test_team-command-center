@@ -23,6 +23,6 @@ variable "teams" {
   ]
 }
 
-variable "token" {
+variable "GH_APP_TOKEN" {
   type = string
 }
