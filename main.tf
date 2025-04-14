@@ -17,12 +17,41 @@ locals {
       )
     }
   ]
+
   default_branch_protection_map = {
     for item in local.default_branch_protections :
-    "${item.repo_name}-${item.default_branch}" => item
+      "${item.repo_name}-${item.default_branch}" => item
+  }
+
+collaborators_by_repo = {
+      for repo in var.repositories : 
+      repo => [
+        for user in var.collaborators : {
+          username   = user.username
+          permission = user.permission
+        }
+        if contains(user.repository, repo)
+      ]
+    }
+
+  teams_by_repo = {
+    for repo in var.repositories :
+    repo => [
+      for team in var.teams : {
+        team_id    = team.team_id
+        permission = team.permission
+      }
+      if contains(team.repository, repo)
+    ]
+  }
+
+  combined_collaborators = {
+    for repo in var.repositories : repo => {
+      users = lookup(local.collaborators_by_repo, repo, [])
+      teams = lookup(local.teams_by_repo, repo, [])
+    }
   }
 }
-
 
 import {
   for_each = {
@@ -115,11 +144,12 @@ resource "github_branch_protection" "main_protection" {
 }
 
 resource "github_repository_collaborators" "repo_collaborators" {
-  for_each = toset(var.repositories)
-  repository = each.value
+  for_each = local.combined_collaborators
+
+  repository = each.key
 
   dynamic "user" {
-    for_each = var.collaborators
+    for_each = each.value.users
     content {
       username   = user.value.username
       permission = user.value.permission
@@ -127,7 +157,7 @@ resource "github_repository_collaborators" "repo_collaborators" {
   }
 
   dynamic "team" {
-    for_each = var.teams
+    for_each = each.value.teams
     content {
       team_id    = data.github_team.teams[team.value.team_id].id
       permission = team.value.permission
