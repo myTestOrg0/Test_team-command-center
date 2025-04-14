@@ -21,5 +21,5 @@ if [ -f "$DIR/$FILE" ]; then
     fi
 else
     echo "$FILE does not found in $DIR"
-    exit 1
+    exit 0
 fi
