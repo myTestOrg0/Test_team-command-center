@@ -64,7 +64,7 @@ class ComplianceChecker:
             current_admins = []
             for admin in admins:
                 current_admins.append(admin.login)
-            self.compl_status.comments.append(f"More than 1 admins. Current admins are: {current_admins}.")
+            self.compl_status.comments.append(f"More than 1 admin. Current admins are: {current_admins}.")
         if len(writers) > 15:
             self.compl_status.comments.append(f"More than 15 writers.")
         if len(members) == 0:
