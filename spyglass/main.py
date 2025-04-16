@@ -1,0 +1,21 @@
+import gh_token_helper
+from api_helper import ApiHelper
+from gh_token_helper import *
+from gh_repository import GHRepository
+from compliance_checker import ComplianceChecker
+from compl_status import ComplianceStatus
+from prettytable import PrettyTable
+
+if __name__ == '__main__':
+    token = gh_token_helper.get_access_token()
+    api_helper = ApiHelper(token)
+    compliance_checker = ComplianceChecker()
+    table = PrettyTable()
+    table.field_names = ["Repository", "Compliance status", "Comments"]
+    for repo_name in repositories:
+        repository = GHRepository(repo_name)
+        repository.initialize(api_helper)
+        status = compliance_checker.check_repo_compl(repository)
+        table.add_row([status.repository_name, status.status, "\n".join(status.comments)])
+        table.add_row(["-" * 5, "-" * 5, "-" * 15])
+    print(table)
