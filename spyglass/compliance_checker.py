@@ -13,7 +13,7 @@ class ComplianceChecker:
         "is_dependabot_enabled": (True, "Dependabot scanning is turned off."),
         "dependabot_open_alerts_number": (0, "Open Dependabot alerts found."),
         "secret_scan_alerts_number": (0, "Open secrets scanning found."),
-        "have_codeowners_file": (True, "No CODEOWNERS file"),
+        "have_codeowners_file": (True, "No CODEOWNERS file."),
     }
 
     standard_protection_rule = {
@@ -64,11 +64,11 @@ class ComplianceChecker:
             current_admins = []
             for admin in admins:
                 current_admins.append(admin.login)
-            self.compl_status.comments.append(f"More than 1 admins. Current admins are: {current_admins}.\n")
+            self.compl_status.comments.append(f"More than 1 admins. Current admins are: {current_admins}.")
         if len(writers) > 15:
-            self.compl_status.comments.append(f"More than 15 writers.\n")
+            self.compl_status.comments.append(f"More than 15 writers.")
         if len(members) == 0:
-            self.compl_status.comments.append(f"No direct collaborators.\n")
+            self.compl_status.comments.append(f"No direct collaborators.")
 
     def check_repo(self, repo: GHRepository) -> None:
         """Check repository properties for policy compliance"""
