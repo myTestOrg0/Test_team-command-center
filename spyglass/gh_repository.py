@@ -15,31 +15,42 @@ class GHRepository:
         self.name = name
         self.is_private = False
         self.is_fork = False
-        self.default_branch = ""
+        self.default_branch = "main"
         self.is_archived = False
         self.is_disabled = False
         self.visibility = ""
         self.is_secrets_scanning_enable = False
         self.is_secret_scanning_push_protection_enabled = False
         self.is_secret_scanning_non_provider_patterns_enabled = False
-        self.branch_protection_rule = GHBranchProtectionRule()
+        self.branch_protection_rules = []
         self.is_dependabot_enabled = False
         self.updated_at = ""
         self.created_at = ""
         self.dependabot_open_alerts_number = 0
         self.secret_scan_alerts_number = 0
         self.have_codeowners_file = False
+        self.branches_2_protect = ["main", "develop"]
+
+    def __clarify_branches_2_protect(self, api_helper: ApiHelper) -> None:
+        """Clarify what exact branches must be protected"""
+        self.branches_2_protect = [
+            branch for branch in self.branches_2_protect
+            if api_helper.get_repo_branch(self.name, branch) != {}
+        ]
+        if self.default_branch not in self.branches_2_protect:
+            self.branches_2_protect.append(self.default_branch)
 
     def initialize(self, api_helper: ApiHelper) -> None:
         """Extract basic information about repository"""
         self.get_all_members(api_helper)
         self.set_base_info(api_helper)
+        self.__clarify_branches_2_protect(api_helper)
         self.is_dependabot_enabled = api_helper.get_dependabot_status(self.name)
-        self.set_branch_protection_rule_info(api_helper)
+        for branch in self.branches_2_protect:
+            self.branch_protection_rules.append(self.set_branch_protection_rule_info(api_helper, branch))
         self.set_open_dependabot_alerts_number(api_helper)
         self.set_open_secret_scan_alerts_number(api_helper)
         self.have_codeowners_file = api_helper.search_codeowners_file(self.name)
-
 
     def set_base_info(self, api_helper: ApiHelper) -> None:
         """Extract base repository info from API response to object's properties"""
@@ -79,43 +90,45 @@ class GHRepository:
             member.permissions = member_info["permissions"]
             self.members.append(member)
 
-    def set_branch_protection_rule_info(self, api_helper: ApiHelper) -> None:
-        """Extract default branch protection rule info from API response to object's properties"""
-        rule_info = api_helper.get_branch_protection(self.name, self.default_branch)
+    def set_branch_protection_rule_info(self, api_helper: ApiHelper, branch_name: str) -> GHBranchProtectionRule:
+        """Extract branch protection rule info from API response to object's properties"""
+        branch_protection_rule = GHBranchProtectionRule()
+        branch_protection_rule.branch_name = branch_name
+        rule_info = api_helper.get_branch_protection(self.name, branch_name)
         if rule_info == {}:
-            return
-        self.branch_protection_rule.is_enabled = True
+            return branch_protection_rule
+        branch_protection_rule.is_enabled = True
         if "required_pull_request_reviews" in rule_info:
-            self.branch_protection_rule.required_pr = True
-            self.branch_protection_rule.dismiss_stale_reviews = rule_info["required_pull_request_reviews"][
-            "dismiss_stale_reviews"]
-            self.branch_protection_rule.require_code_owner_reviews = rule_info["required_pull_request_reviews"][
-            "require_code_owner_reviews"]
-            self.branch_protection_rule.required_approving_review_count = rule_info["required_pull_request_reviews"][
-            "required_approving_review_count"]
-            self.branch_protection_rule.require_last_push_approval = rule_info["required_pull_request_reviews"][
-            "require_last_push_approval"]
+            branch_protection_rule.required_pr = True
+            branch_protection_rule.dismiss_stale_reviews = rule_info["required_pull_request_reviews"][
+                "dismiss_stale_reviews"]
+            branch_protection_rule.require_code_owner_reviews = rule_info["required_pull_request_reviews"][
+                "require_code_owner_reviews"]
+            branch_protection_rule.required_approving_review_count = rule_info["required_pull_request_reviews"][
+                "required_approving_review_count"]
+            branch_protection_rule.require_last_push_approval = rule_info["required_pull_request_reviews"][
+                "require_last_push_approval"]
             if "bypass_pull_request_allowances" in rule_info["required_pull_request_reviews"]:
-                self.branch_protection_rule.bypass_pull_request_allowances["users"] = \
-                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["users"]
-                self.branch_protection_rule.bypass_pull_request_allowances["teams"] = \
-                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["teams"]
-                self.branch_protection_rule.bypass_pull_request_allowances["apps"] = \
-                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["apps"]
+                branch_protection_rule.bypass_pull_request_allowances["users"] = \
+                    rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["users"]
+                branch_protection_rule.bypass_pull_request_allowances["teams"] = \
+                    rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["teams"]
+                branch_protection_rule.bypass_pull_request_allowances["apps"] = \
+                    rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["apps"]
         if "restrictions" in rule_info:
-            self.branch_protection_rule.push_restrictions = True
+            branch_protection_rule.push_restrictions = True
 
-
-        self.branch_protection_rule.required_signatures = rule_info["required_signatures"]["enabled"]
-        self.branch_protection_rule.required_linear_history = rule_info["required_linear_history"]["enabled"]
-        self.branch_protection_rule.allow_force_pushes = rule_info["allow_force_pushes"]["enabled"]
-        self.branch_protection_rule.allow_deletions = rule_info["allow_deletions"]["enabled"]
-        self.branch_protection_rule.block_creations = rule_info["block_creations"]["enabled"]
-        self.branch_protection_rule.required_conversation_resolution = rule_info["required_conversation_resolution"]["enabled"]
-        self.branch_protection_rule.lock_branch = rule_info["lock_branch"]["enabled"]
-        self.branch_protection_rule.allow_fork_syncing = rule_info["allow_fork_syncing"]["enabled"]
-        self.branch_protection_rule.enforce_admins = rule_info["enforce_admins"]["enabled"]
-
+        branch_protection_rule.required_signatures = rule_info["required_signatures"]["enabled"]
+        branch_protection_rule.required_linear_history = rule_info["required_linear_history"]["enabled"]
+        branch_protection_rule.allow_force_pushes = rule_info["allow_force_pushes"]["enabled"]
+        branch_protection_rule.allow_deletions = rule_info["allow_deletions"]["enabled"]
+        branch_protection_rule.block_creations = rule_info["block_creations"]["enabled"]
+        branch_protection_rule.required_conversation_resolution = rule_info["required_conversation_resolution"][
+            "enabled"]
+        branch_protection_rule.lock_branch = rule_info["lock_branch"]["enabled"]
+        branch_protection_rule.allow_fork_syncing = rule_info["allow_fork_syncing"]["enabled"]
+        branch_protection_rule.enforce_admins = rule_info["enforce_admins"]["enabled"]
+        return branch_protection_rule
 
     def get_all_members(self, api_helper: ApiHelper) -> None:
         """Collect info about repository direct collaborators and from teams"""
@@ -138,33 +151,6 @@ class GHRepository:
         alerts_info = api_helper.get_repo_secret_scan_alerts_list(self.name)
         self.secret_scan_alerts_number = len(alerts_info)
 
-
-    def print_info(self):
-        """Print repository info in console"""
-        for name, value in vars(self).items():
-            match name:
-                case "owner":
-                    print("Repository owner:")
-                    self.owner.print_info()
-                    print("")
-                case "members":
-                    print("Repository members:")
-                    for member in self.members:
-                        member.print_info()
-                        print("")
-                    print("")
-                    print("Repository data")
-                case "main_branch_protection_rule":
-                    print("Default branch protection rule:")
-                    if not self.branch_protection_rule.is_enabled:
-                        print("Branch protection disabled")
-                        print("")
-                    else:
-                        self.branch_protection_rule.print_info()
-                case _:
-                    print(f"{name} = {value}")
-        print("---------------")
-
     def to_json(self) -> str:
         """Convert class to JSON"""
         j = {}
@@ -176,11 +162,10 @@ class GHRepository:
                     j["members"] = []
                     for member in self.members:
                         j["members"].append(member.to_json())
-                case "branch_protection_rule":
-                    if not self.branch_protection_rule.is_enabled:
-                        j["branch_protection_rule"] = {"enabled": False}
-                    else:
-                        j["branch_protection_rule"] = self.branch_protection_rule.to_json()
+                case "branch_protection_rules":
+                    j["branch_protection_rules"] = []
+                    for rule in self.branch_protection_rules:
+                        j["branch_protection_rules"].append(rule.to_json())
                 case _:
                     j[f"{name}"] = value
         return json.dumps(j)
