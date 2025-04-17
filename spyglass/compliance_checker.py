@@ -72,7 +72,7 @@ class ComplianceChecker:
             self.compl_status.problems_2_fix.append(f"More than 1 admins. Current admins are: {current_admins}.")
         if len(members) == 0:
             self.compl_status.comments.append(f"No direct collaborators.")
-        self.compl_status.comments.append(f"Users have write permission: {len(writers)}.")
+        self.compl_status.comments.append(f"Users with write permission: {len(writers)}.")
 
     def check_repo(self, repo: GHRepository) -> None:
         """Check repository properties for policy compliance"""
