@@ -22,7 +22,7 @@ class GHRepository:
         self.is_secrets_scanning_enable = False
         self.is_secret_scanning_push_protection_enabled = False
         self.is_secret_scanning_non_provider_patterns_enabled = False
-        self.default_branch_protection_rule = GHBranchProtectionRule()
+        self.branch_protection_rule = GHBranchProtectionRule()
         self.is_dependabot_enabled = False
         self.updated_at = ""
         self.created_at = ""
@@ -84,28 +84,37 @@ class GHRepository:
         rule_info = api_helper.get_branch_protection(self.name, self.default_branch)
         if rule_info == {}:
             return
-        self.default_branch_protection_rule.is_enabled = True
+        self.branch_protection_rule.is_enabled = True
         if "required_pull_request_reviews" in rule_info:
-            self.default_branch_protection_rule.required_pr = True
-            self.default_branch_protection_rule.dismiss_stale_reviews = rule_info["required_pull_request_reviews"][
+            self.branch_protection_rule.required_pr = True
+            self.branch_protection_rule.dismiss_stale_reviews = rule_info["required_pull_request_reviews"][
             "dismiss_stale_reviews"]
-            self.default_branch_protection_rule.require_code_owner_reviews = rule_info["required_pull_request_reviews"][
+            self.branch_protection_rule.require_code_owner_reviews = rule_info["required_pull_request_reviews"][
             "require_code_owner_reviews"]
-            self.default_branch_protection_rule.required_approving_review_count = rule_info["required_pull_request_reviews"][
+            self.branch_protection_rule.required_approving_review_count = rule_info["required_pull_request_reviews"][
             "required_approving_review_count"]
-            self.default_branch_protection_rule.require_last_push_approval = rule_info["required_pull_request_reviews"][
+            self.branch_protection_rule.require_last_push_approval = rule_info["required_pull_request_reviews"][
             "require_last_push_approval"]
+            if "bypass_pull_request_allowances" in rule_info["required_pull_request_reviews"]:
+                self.branch_protection_rule.bypass_pull_request_allowances["users"] = \
+                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["users"]
+                self.branch_protection_rule.bypass_pull_request_allowances["teams"] = \
+                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["teams"]
+                self.branch_protection_rule.bypass_pull_request_allowances["apps"] = \
+                rule_info["required_pull_request_reviews"]["bypass_pull_request_allowances"]["apps"]
         if "restrictions" in rule_info:
-            self.default_branch_protection_rule.push_restrictions = True
-        self.default_branch_protection_rule.required_signatures = rule_info["required_signatures"]["enabled"]
-        self.default_branch_protection_rule.required_linear_history = rule_info["required_linear_history"]["enabled"]
-        self.default_branch_protection_rule.allow_force_pushes = rule_info["allow_force_pushes"]["enabled"]
-        self.default_branch_protection_rule.allow_deletions = rule_info["allow_deletions"]["enabled"]
-        self.default_branch_protection_rule.block_creations = rule_info["block_creations"]["enabled"]
-        self.default_branch_protection_rule.required_conversation_resolution = rule_info["required_conversation_resolution"]["enabled"]
-        self.default_branch_protection_rule.lock_branch = rule_info["lock_branch"]["enabled"]
-        self.default_branch_protection_rule.allow_fork_syncing = rule_info["allow_fork_syncing"]["enabled"]
-        self.default_branch_protection_rule.enforce_admins = rule_info["enforce_admins"]["enabled"]
+            self.branch_protection_rule.push_restrictions = True
+
+
+        self.branch_protection_rule.required_signatures = rule_info["required_signatures"]["enabled"]
+        self.branch_protection_rule.required_linear_history = rule_info["required_linear_history"]["enabled"]
+        self.branch_protection_rule.allow_force_pushes = rule_info["allow_force_pushes"]["enabled"]
+        self.branch_protection_rule.allow_deletions = rule_info["allow_deletions"]["enabled"]
+        self.branch_protection_rule.block_creations = rule_info["block_creations"]["enabled"]
+        self.branch_protection_rule.required_conversation_resolution = rule_info["required_conversation_resolution"]["enabled"]
+        self.branch_protection_rule.lock_branch = rule_info["lock_branch"]["enabled"]
+        self.branch_protection_rule.allow_fork_syncing = rule_info["allow_fork_syncing"]["enabled"]
+        self.branch_protection_rule.enforce_admins = rule_info["enforce_admins"]["enabled"]
 
 
     def get_all_members(self, api_helper: ApiHelper) -> None:
@@ -147,11 +156,11 @@ class GHRepository:
                     print("Repository data")
                 case "main_branch_protection_rule":
                     print("Default branch protection rule:")
-                    if not self.default_branch_protection_rule.is_enabled:
+                    if not self.branch_protection_rule.is_enabled:
                         print("Branch protection disabled")
                         print("")
                     else:
-                        self.default_branch_protection_rule.print_info()
+                        self.branch_protection_rule.print_info()
                 case _:
                     print(f"{name} = {value}")
         print("---------------")
@@ -167,11 +176,11 @@ class GHRepository:
                     j["members"] = []
                     for member in self.members:
                         j["members"].append(member.to_json())
-                case "default_branch_protection_rule":
-                    if not self.default_branch_protection_rule.is_enabled:
-                        j["default_branch_protection_rule"] = {"enabled": False}
+                case "branch_protection_rule":
+                    if not self.branch_protection_rule.is_enabled:
+                        j["branch_protection_rule"] = {"enabled": False}
                     else:
-                        j["default_branch_protection_rule"] = self.default_branch_protection_rule.to_json()
+                        j["branch_protection_rule"] = self.branch_protection_rule.to_json()
                 case _:
                     j[f"{name}"] = value
         return json.dumps(j)
