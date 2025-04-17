@@ -18,6 +18,7 @@ class GHBranchProtectionRule:
         self.allow_fork_syncing = False
         self.required_pr = False
         self.push_restrictions = False
+        self.bypass_pull_request_allowances = {}
 
     def print_info(self):
         """Print default branch protection rule in console"""
@@ -31,5 +32,3 @@ class GHBranchProtectionRule:
         for name, value in vars(self).items():
             j[f"{name}"] = value
         return j
-
-
