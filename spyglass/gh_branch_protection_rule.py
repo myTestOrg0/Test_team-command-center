@@ -2,6 +2,7 @@ class GHBranchProtectionRule:
     """Class representing state of a repository default branch protection rule"""
 
     def __init__(self):
+        self.branch_name = ""
         self.is_enabled = False
         self.dismiss_stale_reviews = False
         self.require_code_owner_reviews = False
@@ -32,3 +33,4 @@ class GHBranchProtectionRule:
         for name, value in vars(self).items():
             j[f"{name}"] = value
         return j
+
