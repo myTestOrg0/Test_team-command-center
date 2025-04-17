@@ -98,7 +98,7 @@ class ApiHelper:
 
     def search_codeowners_file(self, repo_name: str) -> bool:
         """Check whether a repository have CODEOWNERS file or not."""
-        url = f"{self.GITHUB_URL}/repos/org_name/{repo_name}/contents/.github/CODEOWNERS"
+        url = f"{self.GITHUB_URL}/repos/{org_name}/{repo_name}/contents/.github/CODEOWNERS"
         response = requests.get(url=url, headers=self.__headers)
         match response.status_code:
             case 404:
