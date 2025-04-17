@@ -1,5 +1,4 @@
 import json
-
 from gh_user import GHUser
 from api_helper import ApiHelper
 from gh_branch_protection_rule import GHBranchProtectionRule
