@@ -72,14 +72,22 @@ class ComplianceChecker:
             self.compl_status.problems_2_fix.append(f"More than 1 admins. Current admins are: {current_admins}.")
         if len(members) == 0:
             self.compl_status.comments.append(f"No direct collaborators.")
-        self.compl_status.comments.append(f"{len(writers)} users have write permission.")
+        self.compl_status.comments.append(f"Users have write permission: {len(writers)}.")
 
     def check_repo(self, repo: GHRepository) -> None:
         """Check repository properties for policy compliance"""
         for name, value in vars(repo).items():
             if name in self.standard_repository.keys():
-                if value != self.standard_repository[name][0]:
-                    self.compl_status.problems_2_fix.append(self.standard_repository[name][1])
+                match name:
+                    case "is_secrets_scanning_enable":
+                        if repo.visibility != "public":
+                            continue
+                        else:
+                            if value != self.standard_repository[name][0]:
+                                self.compl_status.problems_2_fix.append(self.standard_repository[name][1])
+                    case _:
+                        if value != self.standard_repository[name][0]:
+                            self.compl_status.problems_2_fix.append(self.standard_repository[name][1])
 
     def check_branch_protection(self, branch_protection_rule: GHBranchProtectionRule) -> None:
         """Check repository default branch protection for policy compliance"""
