@@ -1,7 +1,10 @@
 import json
+import fnmatch
+
 from gh_user import GHUser
 from api_helper import ApiHelper
 from gh_branch_protection_rule import GHBranchProtectionRule
+from gh_environment import GHEnvironment
 
 
 class GHRepository:
@@ -28,22 +31,24 @@ class GHRepository:
         self.dependabot_open_alerts_number = 0
         self.secret_scan_alerts_number = 0
         self.have_codeowners_file = False
+        self.branches = []
         self.branches_2_protect = ["main", "develop"]
+        self.environments = []
 
     def __clarify_branches_2_protect(self, api_helper: ApiHelper) -> None:
         """Clarify what exact branches must be protected"""
         self.branches_2_protect = [
             branch for branch in self.branches_2_protect
-            if api_helper.get_repo_branch(self.name, branch) != {}
+            if branch in self.branches
         ]
-        if self.default_branch not in self.branches_2_protect:
-            self.branches_2_protect.append(self.default_branch)
 
     def initialize(self, api_helper: ApiHelper) -> None:
         """Extract basic information about repository"""
-        self.get_all_members(api_helper)
         self.set_base_info(api_helper)
+        self.set_branches(api_helper)
         self.__clarify_branches_2_protect(api_helper)
+        self.set_environments(api_helper)
+        self.set_members(api_helper)
         self.is_dependabot_enabled = api_helper.get_dependabot_status(self.name)
         for branch in self.branches_2_protect:
             self.branch_protection_rules.append(self.set_branch_protection_rule_info(api_helper, branch))
@@ -80,17 +85,21 @@ class GHRepository:
         else:
             self.is_secret_scanning_non_provider_patterns_enabled = False
 
-    def proceed_members_info(self, members_info: list) -> None:
+    def proceed_members_info(self, members_info: list) -> list:
         """Extract members info from API response to object's properties"""
+        members = []
         for member_info in members_info:
             member = GHUser()
             member.login = member_info["login"]
             member.id = member_info["id"]
-            member.permissions = member_info["permissions"]
-            self.members.append(member)
-
+            if "permissions" not in member_info.keys():
+                member.permissions = []
+            else:
+                member.permissions = member_info["permissions"]
+            members.append(member)
+        return members
     def set_branch_protection_rule_info(self, api_helper: ApiHelper, branch_name: str) -> GHBranchProtectionRule:
-        """Extract branch protection rule info from API response to object's properties"""
+        """Extract default branch protection rule info from API response to object's properties"""
         branch_protection_rule = GHBranchProtectionRule()
         branch_protection_rule.branch_name = branch_name
         rule_info = api_helper.get_branch_protection(self.name, branch_name)
@@ -129,16 +138,16 @@ class GHRepository:
         branch_protection_rule.enforce_admins = rule_info["enforce_admins"]["enabled"]
         return branch_protection_rule
 
-    def get_all_members(self, api_helper: ApiHelper) -> None:
+    def set_members(self, api_helper: ApiHelper) -> None:
         """Collect info about repository direct collaborators and from teams"""
         reposiory_teams = api_helper.get_repo_teams_list(self.name)
         for team in reposiory_teams:
             team_members = api_helper.get_team_members_list(team["slug"])
             for team_member in team_members:
                 team_member["permissions"] = team["permissions"]
-            self.proceed_members_info(team_members)
+            self.members += self.proceed_members_info(team_members)
         repository_members = api_helper.get_repo_members_list(self.name)
-        self.proceed_members_info(repository_members)
+        self.members += self.proceed_members_info(repository_members)
 
     def set_open_dependabot_alerts_number(self, api_helper: ApiHelper) -> None:
         """Set up number of open Dependabot alerts"""
@@ -149,6 +158,42 @@ class GHRepository:
         """Set up number of open Dependabot alerts"""
         alerts_info = api_helper.get_repo_secret_scan_alerts_list(self.name)
         self.secret_scan_alerts_number = len(alerts_info)
+
+    def set_branches(self, api_helper: ApiHelper) -> None:
+        """Set up repository branches list"""
+        branches_info = api_helper.get_repo_branches_list(self.name)
+        for branch in branches_info:
+            self.branches.append(branch["name"])
+    def set_environments(self, api_helper: ApiHelper) -> None:
+        """Collect information about repository environments"""
+        env_info = api_helper.get_repo_environments(self.name)
+        for env in env_info["environments"]:
+            repo_env = GHEnvironment(env["name"])
+            repo_env.can_admins_bypass = env["can_admins_bypass"]
+            for protection_rule in env["protection_rules"]:
+                if protection_rule["type"] == "required_reviewers":
+                    repo_env.is_review_needed = True
+                    repo_env.is_self_review_enabled = protection_rule["prevent_self_review"]
+                    for reviewer in protection_rule["reviewers"]:
+                        if reviewer["type"] == "User":
+                            user = GHUser()
+                            user.id = reviewer["reviewer"]["id"]
+                            user.login = reviewer["reviewer"]["login"]
+                            repo_env.reviewers.append(user)
+                        if reviewer["type"] == "Team":
+                            team_members = api_helper.get_team_members_list(reviewer["reviewer"]["slug"])
+                            repo_env.reviewers += self.proceed_members_info(team_members)
+            self.environments.append(repo_env)
+        for env in self.environments:
+            branches_info = api_helper.get_env_deployments_branches(self.name, env.name)
+            if branches_info == {}:
+                env.branches = self.branches
+            else:
+                for branch_policy in branches_info["branch_policies"]:
+                    for branch in self.branches:
+                        if fnmatch.fnmatch(branch, branch_policy["name"]):
+                            env.branches.append(branch)
+
 
     def to_json(self) -> str:
         """Convert class to JSON"""
@@ -165,6 +210,10 @@ class GHRepository:
                     j["branch_protection_rules"] = []
                     for rule in self.branch_protection_rules:
                         j["branch_protection_rules"].append(rule.to_json())
+                case "environments":
+                    j["environments"] = []
+                    for env in self.environments:
+                        j["environments"].append(env.to_json())
                 case _:
                     j[f"{name}"] = value
         return json.dumps(j)
