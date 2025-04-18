@@ -107,3 +107,18 @@ class ApiHelper:
         """Get repository branch info"""
         url = f"{self.GITHUB_URL}/repos/{org_name}/{repo_name}/branches/{branch_name}"
         return self.__get_dict_from_api(url)
+
+    def get_repo_branches_list(self, repo_name: str) -> list:
+        """Get list of repository branches"""
+        url = f"{self.GITHUB_URL}/repos/{org_name}/{repo_name}/branches?per_page=100"
+        return self.__get_list_from_api(url)
+
+    def get_repo_environments(self, repo_name: str) -> dict:
+        """Get all environments for repository"""
+        url = f"{self.GITHUB_URL}/repos/{org_name}/{repo_name}/environments"
+        return self.__get_dict_from_api(url)
+
+    def get_env_deployments_branches(self, repo_name: str, env_name: str) -> dict:
+        """Get all branches where env_name can be deployed"""
+        url = f"{self.GITHUB_URL}/repos/{org_name}/{repo_name}/environments/{env_name}/deployment-branch-policies"
+        return self.__get_dict_from_api(url)
