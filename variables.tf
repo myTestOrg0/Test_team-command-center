@@ -1,3 +1,7 @@
+variable "GH_APP_TOKEN" {
+  type = string
+}
+
 variable "repositories" {
   type    = list(string)
   default = ["NewRepoFor", "TestRepo"]
