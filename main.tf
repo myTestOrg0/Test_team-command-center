@@ -1,10 +1,9 @@
 import {
-  for_each = local.standart_branches_to_import_map_combined
+  for_each = local.standart_branches_to_import_map
 
   to = github_branch_protection.standart_protection[each.key]
   id = "${each.value.repo_name}:${each.value.branch_name}"
 }
-
 import {
   for_each = local.custom_branches_to_import_map
 
@@ -13,9 +12,10 @@ import {
 }
 
 
+
 resource "github_branch_protection" "standart_protection" {
   depends_on = [github_repository_collaborators.repo_collaborators]
-  for_each = local.standart_branches_to_import_map_combined
+  for_each = local.standart_branch_protection_rules
   repository_id = data.github_repository.repo_info[each.value.repo_name].node_id
   pattern       = each.value.branch_name
   allows_deletions = false
@@ -53,6 +53,7 @@ resource "github_branch_protection" "custom_protection" {
 
 resource "github_repository_collaborators" "repo_collaborators" {
   for_each = local.combined_collaborators
+
   repository = each.key
 
   dynamic "user" {
