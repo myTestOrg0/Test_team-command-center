@@ -1,6 +1,27 @@
 variable "repositories" {
   type    = list(string)
-  default = ["NewRepoFor"]
+  default = ["NewRepoFor", "TestRepo"]
+}
+
+variable "branch_protection" {
+  description = "List of repositories which need a protection"
+  type = list(object({
+    repo_name = string,
+    branch_name = string,
+    push_restrictions = string,
+    protection_type = string
+  }))
+  default = [
+    {
+      repo_name = "NewRepoFor", branch_name = "main", push_restrictions = "test_team", protection_type = "standart"
+    },
+    {
+      repo_name = "NewRepoFor", branch_name = "develop", push_restrictions = "test_team", protection_type = "custom"
+    },
+    {
+      repo_name = "TestRepo", branch_name = "main", push_restrictions = "test_team", protection_type = "standart"
+    }
+  ]
 }
 
 variable "collaborators" {
@@ -23,19 +44,15 @@ variable "teams" {
   default = [
     {
       team_id    = "test_team"
-      permission = "pull"
+      permission = "push"
       repository = ["NewRepoFor"]
     },
   ]
 }
 
-variable "standart_branch_protection" {
-  description = "List of repositories which need a protection"
-  default = {
-    "NewRepoFor" : {
-      "repo" : "NewRepoFor",
-      "branch" : "main",
-      "push_restrictions" : "test_team"
-    }
-  }
+variable "team_list" {
+  description = "List of github teams"
+  default = [
+    "test_team",       
+  ]
 }
