@@ -1,6 +1,6 @@
 variable "repositories" {
   type    = list(string)
-  default = ["NewRepoFor", "TestRepo"]
+  default = ["NewRepoFor"]
 }
 
 variable "collaborators" {
@@ -10,7 +10,7 @@ variable "collaborators" {
     repository = list(string)
   }))
   default = [
-    { username = "dumnarix", permission = "admin", repository = ["NewRepoFor", "TestRepo"]},
+    { username = "dumnarix", permission = "admin", repository = ["NewRepoFor"]},
   ]
 }
 
@@ -24,11 +24,18 @@ variable "teams" {
     {
       team_id    = "test_team"
       permission = "pull"
-      repository = ["NewRepoFor", "TestRepo"]
+      repository = ["NewRepoFor"]
     },
   ]
 }
 
-variable "GH_APP_TOKEN" {
-  type = string
+variable "standart_branch_protection" {
+  description = "List of repositories which need a protection"
+  default = {
+    "NewRepoFor" : {
+      "repo" : "NewRepoFor",
+      "branch" : "main",
+      "push_restrictions" : "test_team"
+    }
+  }
 }
