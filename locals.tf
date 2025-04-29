@@ -17,6 +17,20 @@ locals {
     ]
   ])
 
+  default_branch_protection_rules = {
+    for repo_name in var.repositories :
+    repo_name => data.github_repository.repo_info[repo_name].default_branch
+  }
+
+  default_branch_protection_rules_to_import = {
+  for repo_name in var.repositories : 
+  repo_name => data.github_repository.repo_info[repo_name].default_branch
+  if contains(
+    [for rule in data.github_branch_protection_rules.branch_protection_rules[repo_name].rules : rule.pattern],
+    data.github_repository.repo_info[repo_name].default_branch
+  )
+}
+
   branches_to_import = [
     for item in var.branch_protection : item
     if contains([
@@ -86,6 +100,7 @@ collaborators_by_repo = {
       if contains(team.repository, repo)
     ]
   }
+
 
   combined_collaborators = {
     for repo in local.repositories_from_collaborators_and_teams : repo => {
