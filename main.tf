@@ -38,7 +38,7 @@ resource "github_branch_protection" "default_branch_protection" {
     require_code_owner_reviews = true
     require_last_push_approval = true
     required_approving_review_count = lookup(var.default_branch_protection_settings, "required_approving_review_count", 1)
-    restrict_dismissals = true
+    restrict_dismissals = false
   } 
   restrict_pushes {
   blocks_creations = true
@@ -66,7 +66,7 @@ resource "github_branch_protection" "standart_protection" {
     require_code_owner_reviews = true
     require_last_push_approval = true
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
-    restrict_dismissals = true
+    restrict_dismissals = false
   } 
   restrict_pushes {
   blocks_creations = true
