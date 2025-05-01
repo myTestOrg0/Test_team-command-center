@@ -27,10 +27,6 @@ def get_access_token() -> str:
         if "token" in response.json():
             return response.json()["token"]
         else:
-            print("Failed to extract token from API response.")
-            print(response.text)
-            exit(1)
+            raise RuntimeError(f"API call failed with status {response.status_code} for {url}\n{response.text}")
     else:
-        print(f"Failed to execute a request to {url}. Code: {response.status_code}"
-                f"{response.text}")
-        exit(1)
+        raise RuntimeError(f"API call failed with status {response.status_code} for {url}\n{response.text}")
