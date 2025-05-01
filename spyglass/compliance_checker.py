@@ -56,6 +56,7 @@ class ComplianceChecker:
             if name in self.check_configuration["repository"].keys():
                 if value != self.check_configuration["repository"][name]["st_value"]:
                     self.compl_status.problems_2_fix.append(self.check_configuration["repository"][name]["error_msg"])
+                    
     def check_branch_protection(self, protection_rule: GHBranchProtectionRule) -> None:
         """Check repository default branch protection for policy compliance"""
         branch_name = protection_rule.branch_name
