@@ -9,7 +9,7 @@ class ComplianceChecker:
 
     def __init__(self):
         self.compl_status = ComplianceStatus()
-        with open("./check_configuration.json", "r") as f:
+        with open("check_configuration.json", "r") as f:
             self.check_configuration = json.load(f)
 
     def check_repo_compl(self, repo: GHRepository) -> ComplianceStatus:
