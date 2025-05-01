@@ -33,8 +33,8 @@ resource "github_branch_protection" "default_branch_protection" {
   required_linear_history  = false
   required_pull_request_reviews {
     dismiss_stale_reviews  = true
-    dismissal_restrictions = var.default_branch_protection_settings.push_restrictions == "" ? [] : [data.github_team.team_id[var.default_branch_protection_settings.push_restrictions].node_id]
-    pull_request_bypassers = var.default_branch_protection_settings.push_restrictions == "" ? [] : [data.github_team.team_id[var.default_branch_protection_settings.push_restrictions].node_id]
+    dismissal_restrictions = []
+    pull_request_bypassers = []
     require_code_owner_reviews = true
     require_last_push_approval = true
     required_approving_review_count = lookup(var.default_branch_protection_settings, "required_approving_review_count", 1)
@@ -61,8 +61,8 @@ resource "github_branch_protection" "standart_protection" {
   required_linear_history  = false
   required_pull_request_reviews {
     dismiss_stale_reviews  = true
-    dismissal_restrictions = each.value.push_restrictions == "" ? [] : [data.github_team.team_id[each.value.push_restrictions].node_id]
-    pull_request_bypassers = each.value.push_restrictions == "" ? [] : [data.github_team.team_id[each.value.push_restrictions].node_id]
+    dismissal_restrictions = []
+    pull_request_bypassers = []
     require_code_owner_reviews = true
     require_last_push_approval = true
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
