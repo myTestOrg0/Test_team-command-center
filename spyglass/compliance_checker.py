@@ -9,7 +9,7 @@ class ComplianceChecker:
 
     def __init__(self):
         self.compl_status = ComplianceStatus()
-        with open("/home/runner/work/Test_team-command-center/Test_team-command-center/spyglass/check_configuration.json", "r") as f:
+        with open("check_configuration.json", "r") as f:
             self.check_configuration = json.load(f)
 
     def check_repo_compl(self, repo: GHRepository) -> ComplianceStatus:
@@ -37,10 +37,10 @@ class ComplianceChecker:
         admins = []
         writers = []
         for member in members:
-            if member.permissions["admin"]:
-                admins.append(member)
-            if member.permissions["push"]:
-                writers.append(member)
+            if member.permissions["admin"] and member.login not in admins:
+                admins.append(member.login)
+            if member.permissions["push"] and member.login not in writers:
+                writers.append(member.login)
         if len(admins) > 1:
             current_admins = []
             for admin in admins:
