@@ -2,6 +2,7 @@ from gh_branch_protection_rule import GHBranchProtectionRule
 from compl_status import ComplianceStatus
 from gh_repository import GHRepository
 import json
+import os
 
 
 class ComplianceChecker:
@@ -9,6 +10,7 @@ class ComplianceChecker:
 
     def __init__(self):
         self.compl_status = ComplianceStatus()
+        os.system("ls")
         with open("check_configuration.json", "r") as f:
             self.check_configuration = json.load(f)
 
