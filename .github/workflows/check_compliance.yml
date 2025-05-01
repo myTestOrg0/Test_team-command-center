@@ -26,7 +26,6 @@ jobs:
         env:
             GH_APP_TOKEN: ${{ secrets.GH_APP_TOKEN }}
         run: |
-           ls ./spyglass
            echo '```'>>$GITHUB_STEP_SUMMARY
            python ./spyglass/main.py >> $GITHUB_STEP_SUMMARY
            echo '```'>>$GITHUB_STEP_SUMMARY
