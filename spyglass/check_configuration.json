@@ -1,0 +1,74 @@
+{
+  "repository": {
+    "is_dependabot_enabled": {
+      "st_value": true,
+      "error_msg": "Dependabot scanning is turned off."
+    },
+    "dependabot_open_alerts_number": {
+      "st_value": 0,
+      "error_msg": "Open Dependabot alerts found."
+    },
+    "secret_scan_alerts_number": {
+      "st_value": 0,
+      "error_msg": "Open secrets scanning found."
+    },
+    "have_codeowners_file": {
+      "st_value": false,
+      "error_msg": "No CODEOWNERS file."
+    }
+  },
+  "protection_rule": {
+    "is_enabled": {
+      "st_value": true,
+      "error_msg": "Branch is unprotected."
+    },
+    "dismiss_stale_reviews": {
+      "st_value": true,
+      "error_msg": "Stale pull request approval is turned off."
+    },
+    "require_code_owner_reviews": {
+      "st_value": true,
+      "error_msg": "CODEOWNERS pull request review is turned off."
+    },
+    "require_last_push_approval": {
+      "st_value": true,
+      "error_msg": "Approval of the most recent reviewable push is turned off."
+    },
+    "required_approving_review_count": {
+      "st_value": 1,
+      "error_msg": "Pull request approval is turned off."
+    },
+    "required_signatures": {
+      "st_value": true,
+      "error_msg": "Commit signatures are not required."
+    },
+    "enforce_admins": {
+      "st_value": true,
+      "error_msg": "Admins can bypass branch protection."
+    },
+    "allow_force_pushes": {
+      "st_value": false,
+      "error_msg": "Force pushes are turned on"
+    },
+    "allow_deletions": {
+      "st_value": false,
+      "error_msg": "Users with push access can delete branch."
+    },
+    "required_conversation_resolution": {
+      "st_value": true,
+      "error_msg": "Conversation resolution is not required for merge into default branch."
+    },
+    "required_pr": {
+      "st_value": true,
+      "error_msg": "Pull request does not required before merging."
+    },
+    "push_restrictions": {
+      "st_value": true,
+      "error_msg": "No push restrictions.."
+    },
+    "bypass_pull_request_allowances": {
+      "st_value": {},
+      "error_msg": "can bypass branch protection rule."
+    }
+  }
+}
