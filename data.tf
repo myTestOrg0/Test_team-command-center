@@ -1,10 +1,11 @@
+#################### DO NOT CHANGE THIS FILE! ##############################
 data "github_repository" "repo_info" {
-  for_each = local.unique_repositories
+  for_each = toset(var.repositories)
   name     = each.key
 }
 
 data "github_branch_protection_rules" "branch_protection_rules" {
-  for_each = local.unique_repositories
+  for_each = toset(var.repositories)
   repository = each.key
 }
 
