@@ -1,74 +1,90 @@
+################################ DO NOT CHANGE! ########################################
 variable "GH_APP_TOKEN" {
   type = string
 }
+#######################################################################################
 
+###################### PUT YOU REPOSITORIES DATA HERE #################################
 variable "repositories" {
   type    = list(string)
-  default = ["NewRepoFor", "TestRepo"]
+  default = ["NewRepoFor", "TestRepo"] # list of repositories for set up
 }
+
 
 variable "team_list" {
   description = "List of github teams"
-  default = [
-    "test_team",       
+  default = [ # list of teams that will be used for repository/branch configuration
+    "test_team",
+    "review_dismissals"     
   ]
 }
 
+# this block contols settings for branch protection rules for NON DEFAULT branches
 variable "branch_protection" {
   description = "List of settings for branch protection"
   type = list(object({
     repo_name = string,
     branch_name = string,
-    push_restrictions = string,
-    protection_type = string,
-    required_approving_review_count = number
+    push_restrictions = string, # who can push to the branch without maintain permission
+    protection_type = string,   # high or moderate
+    required_approving_review_count = number, # numer of PR reviewers
+    review_dismissals = string # team that can dismiss PR review
   }))
   default = [
     {
-      repo_name = "NewRepoFor", branch_name = "main", push_restrictions = "test_team", protection_type = "standart", "required_approving_review_count" = 4
+      repo_name = "NewRepoFor", 
+      branch_name = "develop", 
+      push_restrictions = "test_team",
+      review_dismissals = "review_dismissals",
+      protection_type = "high", 
+      "required_approving_review_count" = 4
     },
     {
-      repo_name = "NewRepoFor", branch_name = "develop", push_restrictions = "test_team", protection_type = "custom", "required_approving_review_count" = 4
-    },
-    {
-      repo_name = "TestRepo", branch_name = "main", push_restrictions = "test_team", protection_type = "standart", "required_approving_review_count" = 4
+      repo_name = "NewRepoFor", 
+      branch_name = "a", 
+      push_restrictions = "test_team",
+      review_dismissals = "review_dismissals",
+      protection_type = "moderate", 
+      "required_approving_review_count" = 4
     }
   ]
 }
 
+# this block contols settings for branch protection rules for DEFAULT branches
 variable "default_branch_protection_settings" {
   description = "Settings for default branch protection rules"
   type = object({
-    push_restrictions = string,
-    required_approving_review_count = number
+    push_restrictions = string, # who can push to the branch without maintain permission
+    required_approving_review_count = number # numer of PR reviewers
   })
   default = {
-    push_restrictions = "test_team", "required_approving_review_count" = 4
+    push_restrictions = "test_team", 
+    required_approving_review_count = 4
   } 
 }
 
-variable "collaborators" {
-  type = list(object({
-    username   = string
-    permission = string
-    repository = list(string)
-  }))
-  default = [
-    { username = "dumnarix", permission = "admin", repository = ["NewRepoFor", "TestRepo"]},
-  ]
-}
-
+# this block contols team permissions in repositories
 variable "teams" {
   type = list(object({
     team_id    = string
-    permission = string
+    # write --> push
+    # read -->  pull
+    # admin --> admin
+    # maintain --> maintain
+    permission = string 
     repository = list(string)
   }))
   default = [
     {
       team_id    = "test_team"
       permission = "push"
-      repository = ["NewRepoFor", "TestRepo"]
+      repository = ["NewRepoFor"]
+    },
+    {
+      team_id    = "review_dismissals"
+      permission = "push"
+      repository = ["NewRepoFor"]
     },
   ]
 }
+#######################################################################################
