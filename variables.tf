@@ -19,13 +19,21 @@ variable "team_list" {
   ]
 }
 
+variable "app_list" {
+  description = "List of github apps"
+  default = [ # list of apps that will be used for repository/branch configuration
+    "emply-github-app"     
+  ]
+}
+
 # this block contols settings for branch protection rules for NON DEFAULT branches
 variable "branch_protection" {
   description = "List of settings for branch protection"
   type = list(object({
     repo_name = string,
     branch_name = string,
-    push_restrictions = string, # who can push to the branch without maintain permission
+    push_teams  = list(string), # GitHub teams without maintain role who can push into the branch
+    push_apps   = list(string), # GitHub Apps that can push into the branch
     protection_type = string,   # high or moderate
     required_approving_review_count = number, # numer of PR reviewers
     review_dismissals = string # team that can dismiss PR review
@@ -34,31 +42,26 @@ variable "branch_protection" {
     {
       repo_name = "NewRepoFor", 
       branch_name = "develop", 
-      push_restrictions = "test_team",
+      push_teams = ["test_team", "review_dismissals"],
+      push_apps = [  ],
       review_dismissals = "review_dismissals",
       protection_type = "high", 
-      "required_approving_review_count" = 4
-    },
-    {
-      repo_name = "NewRepoFor", 
-      branch_name = "a", 
-      push_restrictions = "test_team",
-      review_dismissals = "review_dismissals",
-      protection_type = "moderate", 
       "required_approving_review_count" = 4
     }
   ]
 }
 
 # this block contols settings for branch protection rules for DEFAULT branches
-variable "default_branch_protection_settings" {
+variable "default_branch_protection" {
   description = "Settings for default branch protection rules"
   type = object({
-    push_restrictions = string, # who can push to the branch without maintain permission
+    push_teams  = list(string), # GitHub teams without maintain role who can push into the branch
+    push_apps   = list(string), # GitHub Apps that can push into the branch
     required_approving_review_count = number # numer of PR reviewers
   })
   default = {
-    push_restrictions = "test_team", 
+    push_teams = ["test_team"], 
+    push_apps = ["emply-github-app"]
     required_approving_review_count = 4
   } 
 }
