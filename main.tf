@@ -39,12 +39,15 @@ resource "github_branch_protection" "default_branch_protection" {
     require_code_owner_reviews = true # require an approved review in pull requests including files with a designated code owner
     require_last_push_approval = true # whether the most recent reviewable push must be approved by someone other than the person who pushed it
     # number of approvals needed DO NOT CHANGE!
-    required_approving_review_count = lookup(var.default_branch_protection_settings, "required_approving_review_count", 1)
+    required_approving_review_count = lookup(var.default_branch_protection, "required_approving_review_count", 1)
   } 
   restrict_pushes {
-  blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
-  # teams that can push to these branch. DO NOT CHANGE 
-  push_allowances = var.default_branch_protection_settings.push_restrictions == "" ? [] : [data.github_team.team_id[var.default_branch_protection_settings.push_restrictions].node_id]
+    blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
+    # teams that can push to these branch. DO NOT CHANGE 
+    push_allowances = concat(
+      [for team in var.default_branch_protection.push_teams : data.github_team.team_id[team].node_id],
+      [for app in var.default_branch_protection.push_apps   : data.github_app.app_id[app].node_id]
+)
   }
 }
 #####################################################################
@@ -76,9 +79,12 @@ resource "github_branch_protection" "high_protection" {
   } 
 
   restrict_pushes {
-  blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
-  # teams that can push to these branch. DO NOT CHANGE 
-  push_allowances = each.value.push_restrictions == "" ? [] : [data.github_team.team_id[each.value.push_restrictions].node_id]
+    blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
+    # teams that can push to these branch. DO NOT CHANGE 
+    push_allowances = concat(
+      [for team in each.value.push_teams : data.github_team.team_id[team].node_id],
+      [for app in each.value.push_apps  : data.github_app.app_id[app].node_id]
+    )
   }
 
   required_status_checks {
@@ -120,9 +126,12 @@ resource "github_branch_protection" "moderate_protection" {
   } 
 
   restrict_pushes {
-  blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
-  # teams that can push to these branch. DO NOT CHANGE 
-  push_allowances = each.value.push_restrictions == "" ? [] : [data.github_team.team_id[each.value.push_restrictions].node_id]
+    blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
+    # teams that can push to these branch. DO NOT CHANGE 
+    push_allowances = concat(
+      [for team in each.value.push_teams : data.github_team.team_id[team].node_id],
+      [for app in each.value.push_apps  : data.github_app.app_id[app].node_id]
+    )
   }
 
 }
