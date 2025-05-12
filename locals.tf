@@ -17,16 +17,16 @@ locals {
 
   default_branch_protection_rules = {
     for repo_name in var.repositories :
-    repo_name => data.github_repository.repo_info[repo_name].default_branch
+      repo_name => data.github_repository.repo_info[repo_name].default_branch
   }
 
   default_branch_protection_rules_to_import = {
-  for repo_name in var.repositories : 
-  repo_name => data.github_repository.repo_info[repo_name].default_branch
-  if contains(
-    [for rule in data.github_branch_protection_rules.branch_protection_rules[repo_name].rules : rule.pattern],
-    data.github_repository.repo_info[repo_name].default_branch
-  )
+    for repo_name in var.repositories : 
+      repo_name => data.github_repository.repo_info[repo_name].default_branch
+      if contains(
+        [for rule in data.github_branch_protection_rules.branch_protection_rules[repo_name].rules : rule.pattern],
+        data.github_repository.repo_info[repo_name].default_branch
+      )
 }
 
   branches_to_import = [
@@ -38,21 +38,40 @@ locals {
 
   branches_to_import_map = {
     for item in local.branches_to_import :
-    "${item.repo_name}:${item.branch_name}" => item
+      "${item.repo_name}:${item.branch_name}" => item
   }
 
-  team_list_set = toset(var.team_list)
+  team_list_set = {
+    for team in distinct(flatten([
+      for bp in var.branch_protection : bp.push_teams
+    ])) : team => team
+  }
+
+  app_list_set = {
+    for app in distinct(flatten([
+      for bp in var.branch_protection : bp.push_apps
+    ])) : app => app
+  }
+
+  default_team_list_set = {
+    for team in var.default_branch_protection.push_teams : team => team
+  }
+
+  default_app_list_set = {
+    for app in var.default_branch_protection.push_apps : app => app
+  }
+
 
  standart_branch_protection_rules = {
     for item in var.branch_protection :
-    "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "high"
+      "${item.repo_name}:${item.branch_name}" => item
+      if item.protection_type == "high"
   }
 
   custom_branch_protection_rules = {
     for item in var.branch_protection :
-    "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "moderate"
+      "${item.repo_name}:${item.branch_name}" => item
+      if item.protection_type == "moderate"
   }
 
   standart_branches_to_import_map = {
@@ -93,5 +112,4 @@ repositories_from_collaborators_and_teams = toset(concat(
       teams = lookup(local.teams_by_repo, repo, [])
     }
   }
-
 }
