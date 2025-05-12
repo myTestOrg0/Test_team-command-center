@@ -1,7 +1,5 @@
+#################### DO NOT CHANGE THIS FILE! ##############################
 locals {
-  unique_repositories = toset([
-    for item in var.branch_protection : item.repo_name
-  ])
 
   branch_protection_rules = {
     for item in var.branch_protection :
@@ -48,18 +46,19 @@ locals {
  standart_branch_protection_rules = {
     for item in var.branch_protection :
     "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "standart"
+    if item.protection_type == "high"
   }
 
   custom_branch_protection_rules = {
     for item in var.branch_protection :
     "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "custom"
+    if item.protection_type == "moderate"
   }
-standart_branches_to_import_map = {
+
+  standart_branches_to_import_map = {
     for item in var.branch_protection :
     "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "standart" &&
+    if item.protection_type == "high" &&
       contains([
         for protected in local.protected_branches : "${protected.repo_name}:${protected.branch_name}"
       ], "${item.repo_name}:${item.branch_name}")
@@ -68,27 +67,15 @@ standart_branches_to_import_map = {
   custom_branches_to_import_map = {
     for item in var.branch_protection :
     "${item.repo_name}:${item.branch_name}" => item
-    if item.protection_type == "custom" &&
+    if item.protection_type == "moderate" &&
       contains([
         for protected in local.protected_branches : "${protected.repo_name}:${protected.branch_name}"
       ], "${item.repo_name}:${item.branch_name}")
   }
 
 repositories_from_collaborators_and_teams = toset(concat(
-    flatten([for c in var.collaborators : c.repository]),
     flatten([for t in var.teams : t.repository])
   ))
-
-collaborators_by_repo = {
-    for repo in local.repositories_from_collaborators_and_teams :
-    repo => [
-      for user in var.collaborators : {
-        username   = user.username
-        permission = user.permission
-      }
-      if contains(user.repository, repo)
-    ]
-  }
 
   teams_by_repo = {
     for repo in local.repositories_from_collaborators_and_teams :
@@ -101,10 +88,8 @@ collaborators_by_repo = {
     ]
   }
 
-
   combined_collaborators = {
     for repo in local.repositories_from_collaborators_and_teams : repo => {
-      users = lookup(local.collaborators_by_repo, repo, [])
       teams = lookup(local.teams_by_repo, repo, [])
     }
   }
