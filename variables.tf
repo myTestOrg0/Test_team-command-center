@@ -58,6 +58,17 @@ variable "branch_protection" {
       "required_approving_review_count" = 4
     }
   ]
+},
+{
+      repo_name = "TestRepo", 
+      branch_name = "main", 
+      push_teams = ["test_team"],
+      push_apps = ["emply-github-app"],
+      review_dismissals = "review_dismissals",
+      protection_type = "high", 
+      "required_approving_review_count" = 4
+    }
+  ]
 }
 
 # this block contols settings for branch protection rules for DEFAULT branches
