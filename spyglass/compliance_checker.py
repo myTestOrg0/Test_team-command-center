@@ -9,7 +9,7 @@ class ComplianceChecker:
 
     def __init__(self):
         self.compl_status = ComplianceStatus()
-        with open("/home/runner/work/Test_team-command-center/Test_team-command-center/spyglass/check_configuration.json", "r") as f:
+        with open("check_configuration.json", "r") as f:
             self.check_configuration = json.load(f)
 
     def check_repo_compl(self, repo: GHRepository) -> ComplianceStatus:
@@ -44,7 +44,7 @@ class ComplianceChecker:
         if len(admins) > 1:
             current_admins = []
             for admin in admins:
-                current_admins.append(admin.login)
+                current_admins.append(admin)
             self.compl_status.problems_2_fix.append(f"More than 1 admins. Current admins are: {current_admins}.")
         if len(members) == 0:
             self.compl_status.comments.append(f"No direct collaborators.")
@@ -56,7 +56,6 @@ class ComplianceChecker:
             if name in self.check_configuration["repository"].keys():
                 if value != self.check_configuration["repository"][name]["st_value"]:
                     self.compl_status.problems_2_fix.append(self.check_configuration["repository"][name]["error_msg"])
-                    
     def check_branch_protection(self, protection_rule: GHBranchProtectionRule) -> None:
         """Check repository default branch protection for policy compliance"""
         branch_name = protection_rule.branch_name
