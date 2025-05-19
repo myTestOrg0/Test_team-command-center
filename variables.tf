@@ -48,25 +48,23 @@ variable "branch_protection" {
       protection_type = "high", 
       "required_approving_review_count" = 4
     },
-{
+    {
       repo_name = "TestRepo", 
       branch_name = "develop", 
       push_teams = ["test_team", "review_dismissals"],
       push_apps = ["emply-github-app"],
-      review_dismissals = "review_dismissals",
+      review_dismissals = "",
       protection_type = "moderate", 
       "required_approving_review_count" = 4
-    }
-  ]
-},
-{
+    },
+    {
       repo_name = "TestRepo", 
       branch_name = "main", 
       push_teams = ["test_team"],
-      push_apps = ["emply-github-app"],
-      review_dismissals = "review_dismissals",
+      push_apps = [],
+      review_dismissals = "",
       protection_type = "high", 
-      "required_approving_review_count" = 4
+      "required_approving_review_count" = 2
     }
   ]
 }
