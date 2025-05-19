@@ -16,10 +16,15 @@ class ApiHelper:
     def __get_list_from_api(self, url: str) -> list:
         """Executes a GET request to get list of data from GitHub API."""
         response = requests.get(url=url, headers=self.__headers)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            raise RuntimeError(f"API call failed with status {response.status_code} for {url}\n{response.text}")
+        match response.status_code:
+            case 200:
+                return response.json()
+            case 403:
+                return []
+            case 404:
+                return []
+            case _:
+                raise RuntimeError(f"API call failed with status {response.status_code} for {url}\n{response.text}")
 
     def __get_dict_from_api(self, url: str) -> dict:
         """Executes a GET request to get single object from GitHub API."""
