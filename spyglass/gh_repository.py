@@ -41,6 +41,8 @@ class GHRepository:
             branch for branch in self.branches_2_protect
             if branch in self.branches
         ]
+        if self.default_branch not in self.branches_2_protect:
+            self.branches_2_protect.append(self.default_branch)
 
     def initialize(self, api_helper: ApiHelper) -> None:
         """Extract basic information about repository"""
