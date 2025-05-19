@@ -13,7 +13,7 @@
       "error_msg": "Open secrets scanning found."
     },
     "have_codeowners_file": {
-      "st_value": false,
+      "st_value": true,
       "error_msg": "No CODEOWNERS file."
     }
   },
