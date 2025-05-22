@@ -1,4 +1,4 @@
-name: Apply Terraform changes
+name: Apply Terraform changes OLD
 env:
     TF_VAR_GH_APP_TOKEN: ${{ secrets.GH_APP_TOKEN }}
 
