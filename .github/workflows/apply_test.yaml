@@ -60,6 +60,8 @@ jobs:
         env:
           USER_NAME: ${{ github.actor }}
         run: |
+         git config user.name "$USER_NAME"
+         git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
          git checkout terraform_state
          git add terraform.tfstate.enc
          git commit -m "Update Terraform state files"
