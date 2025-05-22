@@ -5,7 +5,7 @@ variable "GH_APP_TOKEN" {
 #######################################################################################
 
 ###################### PUT YOU REPOSITORIES DATA HERE #################################
-variable "repositories" {
+ variable "repositories" {
   type    = list(string)
   default = ["NewRepoFor", "TestRepo"] # list of repositories for set up
 }
@@ -37,6 +37,7 @@ variable "branch_protection" {
     protection_type = string,   # high or moderate
     required_approving_review_count = number, # numer of PR reviewers
     review_dismissals = string # team that can dismiss PR review
+    required_status_checks = list(string)
   }))
   default = [
     {
@@ -46,7 +47,8 @@ variable "branch_protection" {
       push_apps = [],
       review_dismissals = "review_dismissals",
       protection_type = "high", 
-      "required_approving_review_count" = 4
+      required_approving_review_count = 4
+      required_status_checks = ["run_check"]
     },
     {
       repo_name = "TestRepo", 
@@ -55,7 +57,8 @@ variable "branch_protection" {
       push_apps = ["emply-github-app"],
       review_dismissals = "",
       protection_type = "moderate", 
-      "required_approving_review_count" = 4
+      required_approving_review_count = 4
+      required_status_checks = []
     },
     {
       repo_name = "TestRepo", 
@@ -64,7 +67,8 @@ variable "branch_protection" {
       push_apps = [],
       review_dismissals = "",
       protection_type = "high", 
-      "required_approving_review_count" = 2
+      required_approving_review_count = 2
+      required_status_checks = []
     }
   ]
 }
