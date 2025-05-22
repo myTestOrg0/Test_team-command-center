@@ -20,6 +20,7 @@ jobs:
         run: |
           git config --global user.name "$USER_NAME"
           git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
+          git fetch origin
           git show origin/terraform_state:terraform.tfstate.enc > terraform.tfstate.enc
 
       - name: Copy files from test branch
