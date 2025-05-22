@@ -91,9 +91,7 @@ resource "github_branch_protection" "high_protection" {
     # list of workflow jobs that must be executed with exit code 0 before merging
     # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
     # WILL BE BLOCKED!
-    contexts = [ 
-      "run_check"
-    ]
+    contexts = each.value.required_status_checks 
     strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
 }
