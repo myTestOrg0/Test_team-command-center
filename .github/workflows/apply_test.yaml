@@ -1,0 +1,66 @@
+name: Apply Terraform changes TEST
+env:
+    TF_VAR_GH_APP_TOKEN: ${{ secrets.GH_APP_TOKEN }}
+
+on:
+  workflow_dispatch:  
+jobs:
+  apply_terraform_changes:
+    runs-on: ubuntu-latest
+    permissions:
+     contents: write
+    environment: terraform_main
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+      - name: Fetch test branch
+        run: |
+          git config --global user.name "$USER_NAME"
+          git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
+          git fetch origin test:test
+          git worktree add ../terraform_state_branch terraform_state
+
+      - name: Copy files from test branch
+        run: |
+          cp -r ../terraform_state_branch/* ./
+          
+      - name: Decrypt Terraform state file
+        continue-on-error: true
+        env:
+            ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: bash ./decrypt.sh
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd
+        with:
+          terraform_version: 1.11.3
+          terraform_wrapper: false
+          
+      - name: Teraform init
+        run: terraform init
+        
+      - name: Terraform apply
+        run: |
+          echo '```'>>$GITHUB_STEP_SUMMARY
+          terraform apply -auto-approve -no-color -input=false >> $GITHUB_STEP_SUMMARY
+          echo '```'>>$GITHUB_STEP_SUMMARY
+          
+      - name: Encrypt Terraform state file
+        continue-on-error: true
+        env:
+            ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+        run: bash ./encrypt.sh
+          
+      - name: Commit Terraform State files
+        continue-on-error: true
+        env:
+          USER_NAME: ${{ github.actor }}
+        run: |
+         git checkout terraform_state
+         git add terraform.tfstate.enc
+         git commit -m "Update Terraform state files"
+         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+         git push origin terraform_state
+         history -c
