@@ -15,7 +15,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           persist-credentials: false
-      - name: Fetch test branch
+          
+      - name: Fetch terraform_state branch
         run: |
           git config --global user.name "$USER_NAME"
           git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
