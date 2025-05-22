@@ -27,10 +27,6 @@ jobs:
             else
               echo "File terraform.tfstate.enc not found in terraform_state branch. Skipping."
             fi
-
-      - name: Copy files from test branch
-        run: |
-          cp -r ../terraform_state_branch/* ./
           
       - name: Decrypt Terraform state file
         continue-on-error: true
