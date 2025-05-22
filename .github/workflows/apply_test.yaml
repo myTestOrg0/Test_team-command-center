@@ -16,12 +16,17 @@ jobs:
         with:
           persist-credentials: false
           
-      - name: Fetch terraform_state branch
+      - name: Try to copy terraform.tfstate.enc from terraform_state branch
         run: |
-          git config --global user.name "$USER_NAME"
-          git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
-          git fetch origin
-          git show origin/terraform_state:terraform.tfstate.enc > terraform.tfstate.enc
+            git config user.name "$USER_NAME"
+            git config user.email "${{ github.actor_id }}+$USER_NAME@users.noreply.github.com"
+            git fetch origin terraform_state
+            if git cat-file -e origin/terraform_state:terraform.tfstate.enc; then
+              echo "File found in terraform_state branch. Extracting..."
+              git checkout origin/terraform_state -- terraform.tfstate.enc
+            else
+              echo "File terraform.tfstate.enc not found in terraform_state branch. Skipping."
+            fi
 
       - name: Copy files from test branch
         run: |
