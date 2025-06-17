@@ -84,11 +84,17 @@ variable "default_branch_protection" {
     push_teams  = list(string), # GitHub teams without maintain role who can push into the branch
     push_apps   = list(string), # GitHub Apps that can push into the branch
     required_approving_review_count = number # numer of PR reviewers
+    
+    # list of workflow jobs that must be executed with exit code 0 before merging
+    # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
+    # WILL BE BLOCKED!
+    required_status_checks = list(string)
   })
   default = {
     push_teams = ["test_team"], 
     push_apps = []
     required_approving_review_count = 4
+    required_status_checks = []
   } 
 }
 
