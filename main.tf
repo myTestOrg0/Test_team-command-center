@@ -52,7 +52,7 @@ resource "github_branch_protection" "default_branch_protection" {
   }
 
 required_status_checks {
-    contexts = each.value.required_status_checks 
+    contexts = lookup(var.default_branch_protection, "required_status_checks", [])
     strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
 }
