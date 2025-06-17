@@ -41,8 +41,6 @@ resource "github_branch_protection" "default_branch_protection" {
     # number of approvals needed DO NOT CHANGE!
     required_approving_review_count = lookup(var.default_branch_protection, "required_approving_review_count", 1)
     restrict_dismissals = false 
-    # teams/users/apps allowed to dismiss pull request reviews 
-    dismissal_restrictions = []
   } 
   restrict_pushes {
     blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
