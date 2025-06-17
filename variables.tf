@@ -46,7 +46,7 @@ variable "branch_protection" {
       push_teams = ["test_team", "review_dismissals"],
       push_apps = [],
       review_dismissals = "review_dismissals",
-      protection_type = "high", 
+      protection_type = "moderate", 
       required_approving_review_count = 4
       required_status_checks = ["run_check"]
     },
