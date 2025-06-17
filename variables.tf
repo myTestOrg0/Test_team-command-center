@@ -37,6 +37,10 @@ variable "branch_protection" {
     protection_type = string,   # high or moderate
     required_approving_review_count = number, # numer of PR reviewers
     review_dismissals = string # team that can dismiss PR review
+
+    # list of workflow jobs that must be executed with exit code 0 before merging
+    # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
+    # WILL BE BLOCKED!
     required_status_checks = list(string)
   }))
   default = [
