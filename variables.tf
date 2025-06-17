@@ -94,7 +94,7 @@ variable "default_branch_protection" {
     push_teams = ["test_team"], 
     push_apps = []
     required_approving_review_count = 4
-    required_status_checks = []
+    required_status_checks = ["run_check"]
   } 
 }
 
