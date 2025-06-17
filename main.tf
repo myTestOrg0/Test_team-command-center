@@ -48,7 +48,12 @@ resource "github_branch_protection" "default_branch_protection" {
     push_allowances = concat(
       [for team in var.default_branch_protection.push_teams : data.github_team.team_id[team].node_id],
       [for app in var.default_branch_protection.push_apps   : data.github_app.app_id[app].node_id]
-)
+    )
+  }
+
+required_status_checks {
+    contexts = each.value.required_status_checks 
+    strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
 }
 #####################################################################
@@ -90,9 +95,6 @@ resource "github_branch_protection" "high_protection" {
   }
 
   required_status_checks {
-    # list of workflow jobs that must be executed with exit code 0 before merging
-    # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
-    # WILL BE BLOCKED!
     contexts = each.value.required_status_checks 
     strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
@@ -134,6 +136,10 @@ resource "github_branch_protection" "moderate_protection" {
     )
   }
 
+required_status_checks {
+    contexts = each.value.required_status_checks 
+    strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
+  }
 }
 #####################################################################
 
