@@ -22,7 +22,7 @@ variable "team_list" {
 variable "app_list" {
   description = "List of github apps"
   default = [ # list of apps that will be used for repository/branch configuration
-    "emply-github-app"     
+    "empty-github-app"     
   ]
 }
 
@@ -54,7 +54,7 @@ variable "branch_protection" {
       repo_name = "TestRepo", 
       branch_name = "develop", 
       push_teams = ["test_team", "review_dismissals"],
-      push_apps = ["emply-github-app"],
+      push_apps = ["empty-github-app"],
       review_dismissals = "",
       protection_type = "moderate", 
       required_approving_review_count = 4
