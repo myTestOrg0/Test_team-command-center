@@ -40,6 +40,9 @@ resource "github_branch_protection" "default_branch_protection" {
     require_last_push_approval = true # whether the most recent reviewable push must be approved by someone other than the person who pushed it
     # number of approvals needed DO NOT CHANGE!
     required_approving_review_count = lookup(var.default_branch_protection, "required_approving_review_count", 1)
+    restrict_dismissals = false 
+    # teams/users/apps allowed to dismiss pull request reviews 
+    dismissal_restrictions = []
   } 
   restrict_pushes {
     blocks_creations = true # only people, teams, or apps allowed to push will be able to create new branches matching this rule
@@ -73,9 +76,10 @@ resource "github_branch_protection" "high_protection" {
     require_last_push_approval = true # whether the most recent reviewable push must be approved by someone other than the person who pushed it
     # number of approvals needed DO NOT CHANGE!
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
-    restrict_dismissals = true 
-    # teams/users/apps allowed to dismiss pull request reviews DO NOT CHANGE!
-    dismissal_restrictions = each.value.review_dismissals == "" ? [] : [data.github_team.team_id[each.value.review_dismissals].node_id]
+    restrict_dismissals = false 
+    # teams/users/apps allowed to dismiss pull request reviews 
+    dismissal_restrictions = []
+    
   } 
 
   restrict_pushes {
@@ -118,9 +122,9 @@ resource "github_branch_protection" "moderate_protection" {
     require_last_push_approval = true # whether the most recent reviewable push must be approved by someone other than the person who pushed it
     # number of approvals needed DO NOT CHANGE!
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
-    restrict_dismissals = false 
-    # teams/users/apps allowed to dismiss pull request reviews 
-    dismissal_restrictions = []
+    restrict_dismissals = true 
+    # teams/users/apps allowed to dismiss pull request reviews DO NOT CHANGE!
+    dismissal_restrictions = each.value.review_dismissals == "" ? [] : [data.github_team.team_id[each.value.review_dismissals].node_id]
   } 
 
   restrict_pushes {
