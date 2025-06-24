@@ -4,7 +4,7 @@ variable "GH_APP_TOKEN" {
 }
 #######################################################################################
 
-###################### PUT YOU REPOSITORIES DATA HERE #################################
+###################### PUT YOUR REPOSITORIES DATA HERE #################################
  variable "repositories" {
   type    = list(string)
 
