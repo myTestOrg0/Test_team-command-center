@@ -61,6 +61,16 @@ variable "branch_protection" {
       required_approving_review_count = 4
       required_status_checks = ["run_check"]
     },
+{
+      repo_name = "NewRepoFor", 
+      branch_name = "feature", 
+      push_teams = ["test_team", "review_dismissals"],
+      push_apps = [],
+      review_dismissals = "review_dismissals",
+      protection_type = "high", 
+      required_approving_review_count = 4
+      required_status_checks = ["run_check"]
+    },
     {
       repo_name = "TestRepo", 
       branch_name = "develop", 
@@ -69,7 +79,7 @@ variable "branch_protection" {
       review_dismissals = "",
       protection_type = "moderate", 
       required_approving_review_count = 4
-      required_status_checks = []
+      required_status_checks = ["run_check"]
     },
     {
       repo_name = "TestRepo", 
