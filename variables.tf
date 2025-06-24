@@ -7,13 +7,17 @@ variable "GH_APP_TOKEN" {
 ###################### PUT YOU REPOSITORIES DATA HERE #################################
  variable "repositories" {
   type    = list(string)
-  default = ["NewRepoFor", "TestRepo"] # list of repositories for set up
+
+  # list of repositories for set up
+  default = ["NewRepoFor", "TestRepo"] 
 }
 
 
 variable "team_list" {
   description = "List of github teams"
-  default = [ # list of teams that will be used for repository/branch configuration
+
+  # list of teams that will be used for repository/branch configuration
+  default = [ 
     "test_team",
     "review_dismissals"     
   ]
@@ -21,12 +25,15 @@ variable "team_list" {
 
 variable "app_list" {
   description = "List of github apps"
-  default = [ # list of apps that will be used for repository/branch configuration
+
+  # list of apps that will be used for repository/branch configuration
+  default = [ 
     "empty-github-app"     
   ]
 }
 
 # this block contols settings for branch protection rules for NON DEFAULT branches
+################################ DO NOT CHANGE! ########################################
 variable "branch_protection" {
   description = "List of settings for branch protection"
   type = list(object({
@@ -39,10 +46,10 @@ variable "branch_protection" {
     review_dismissals = string # team that can dismiss PR review
 
     # list of workflow jobs that must be executed with exit code 0 before merging
-    # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
-    # WILL BE BLOCKED!
     required_status_checks = list(string)
   }))
+  #######################################################################################
+
   default = [
     {
       repo_name = "NewRepoFor", 
@@ -50,7 +57,7 @@ variable "branch_protection" {
       push_teams = ["test_team", "review_dismissals"],
       push_apps = [],
       review_dismissals = "review_dismissals",
-      protection_type = "high", 
+      protection_type = "moderate", 
       required_approving_review_count = 4
       required_status_checks = ["run_check"]
     },
@@ -77,28 +84,29 @@ variable "branch_protection" {
   ]
 }
 
+
 # this block contols settings for branch protection rules for DEFAULT branches
+################################ DO NOT CHANGE! ########################################
 variable "default_branch_protection" {
   description = "Settings for default branch protection rules"
   type = object({
     push_teams  = list(string), # GitHub teams without maintain role who can push into the branch
     push_apps   = list(string), # GitHub Apps that can push into the branch
     required_approving_review_count = number # numer of PR reviewers
-    
-    # list of workflow jobs that must be executed with exit code 0 before merging
-    # DANGER OPTION! YOUR REPOSITORY MUST HAVE SUCH JOB, OTHERWISE ALL PR TO THIS BRANCH
-    # WILL BE BLOCKED!
-    required_status_checks = list(string)
+    required_status_checks = list(string) # list of workflow jobs that must be executed with exit code 0 before merging
   })
+#######################################################################################
+
   default = {
     push_teams = ["test_team"], 
     push_apps = []
     required_approving_review_count = 4
-    required_status_checks = ["run_check"]
+    required_status_checks = []
   } 
 }
 
 # this block contols team permissions in repositories
+################################ DO NOT CHANGE! ########################################
 variable "teams" {
   type = list(object({
     team_id    = string
@@ -109,6 +117,7 @@ variable "teams" {
     permission = string 
     repository = list(string)
   }))
+#######################################################################################
   default = [
     {
       team_id    = "test_team"
