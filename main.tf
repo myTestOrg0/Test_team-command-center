@@ -146,8 +146,6 @@ resource "github_branch_protection" "high_protection" {
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
     restrict_dismissals = false 
     dismissal_restrictions = []
-    #####################################################################
-    
   } 
 
   restrict_pushes {
@@ -164,7 +162,6 @@ resource "github_branch_protection" "high_protection" {
     contexts = each.value.required_status_checks 
     strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
-  #####################################################################
 }
 #####################################################################
 
@@ -241,7 +238,6 @@ required_status_checks {
     contexts = each.value.required_status_checks 
     strict = true # ensures pull requests targeting a matching branch have been tested with the latest code
   }
-  #####################################################################
 }
 #####################################################################
 
