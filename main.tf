@@ -213,15 +213,16 @@ resource "github_branch_protection" "moderate_protection" {
 
     # whether the most recent reviewable push must be approved by someone other than the person who pushed it
     require_last_push_approval = true 
-    # number of approvals needed DO NOT CHANGE!
+
+############################ DO NOT CHANGE! ########################
+    # number of approvals needed 
     required_approving_review_count = lookup(each.value, "required_approving_review_count", 1)
     restrict_dismissals = true 
-    # teams/users/apps allowed to dismiss pull request reviews DO NOT CHANGE!
+
+    # teams/users/apps allowed to dismiss pull request reviews 
     dismissal_restrictions = each.value.review_dismissals == "" ? [] : [data.github_team.team_id[each.value.review_dismissals].node_id]
   } 
 
-
-  ############################ DO NOT CHANGE! ########################
   restrict_pushes {
 
     # only people, teams, or apps allowed to push will be able to create new branches matching this rule
