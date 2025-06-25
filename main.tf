@@ -84,7 +84,6 @@ resource "github_branch_protection" "default_branch_protection" {
       [for team in var.default_branch_protection.push_teams : data.github_team.team_id[team].node_id],
       [for app in var.default_branch_protection.push_apps   : data.github_app.app_id[app].node_id]
     )
-    #####################################################################
   }
 
 required_status_checks {
