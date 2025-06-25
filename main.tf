@@ -151,7 +151,6 @@ resource "github_branch_protection" "high_protection" {
     
   } 
 
-  ############################ DO NOT CHANGE! ########################
   restrict_pushes {
     # only people, teams, or apps allowed to push will be able to create new branches matching this rule
     # teams that can push to these branch. 
