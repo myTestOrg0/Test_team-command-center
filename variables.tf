@@ -54,63 +54,13 @@ variable "branch_protection" {
     {
       repo_name = "NewRepoFor", 
       branch_name = "develop", 
-      push_teams = ["test_team", "review_dismissals"],
-      push_apps = [],
-      review_dismissals = "review_dismissals",
-      protection_type = "moderate", 
-      required_approving_review_count = 4
-      required_status_checks = ["run_check"]
-    },
-{
-      repo_name = "NewRepoFor", 
-      branch_name = "feature", 
-      push_teams = ["test_team", "review_dismissals"],
-      push_apps = [],
-      review_dismissals = "review_dismissals",
-      protection_type = "high", 
-      required_approving_review_count = 4
-      required_status_checks = ["run_check"]
-    },
-{
-      repo_name = "NewRepoFor", 
-      branch_name = "moderate_protection", 
-      push_teams = ["test_team", "review_dismissals"],
-      push_apps = [],
-      review_dismissals = "review_dismissals",
-      protection_type = "moderate", 
-      required_approving_review_count = 4
-      required_status_checks = ["run_check"]
-    },
-{
-      repo_name = "NewRepoFor", 
-      branch_name = "high_protection", 
-      push_teams = ["test_team", "review_dismissals"],
-      push_apps = [],
-      review_dismissals = "",
-      protection_type = "high", 
-      required_approving_review_count = 4
-      required_status_checks = ["run_check"]
-    },
-    {
-      repo_name = "TestRepo", 
-      branch_name = "develop", 
-      push_teams = ["test_team", "review_dismissals"],
-      push_apps = ["empty-github-app"],
-      review_dismissals = "",
-      protection_type = "moderate", 
-      required_approving_review_count = 4
-      required_status_checks = ["run_check"]
-    },
-    {
-      repo_name = "TestRepo", 
-      branch_name = "main", 
       push_teams = ["test_team"],
       push_apps = [],
       review_dismissals = "",
-      protection_type = "high", 
-      required_approving_review_count = 2
-      required_status_checks = []
-    }
+      protection_type = "moderate", 
+      required_approving_review_count = 4
+      required_status_checks = ["run_check"]
+    },
   ]
 }
 
