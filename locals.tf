@@ -54,7 +54,7 @@ locals {
   }
 
   default_team_list_set = {
-    for team in var.default_branch_protection.push_teams : team => team
+    for team in var.team_list : team => team
   }
 
   default_app_list_set = {
