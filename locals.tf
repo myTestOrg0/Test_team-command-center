@@ -100,7 +100,7 @@ repositories_from_collaborators_and_teams = toset(concat(
     for repo in local.repositories_from_collaborators_and_teams :
     repo => [
       for team in var.teams : {
-        team_name    = team.team_name
+        name    = team.name
         permission = team.permission
       }
       if contains(team.repository, repo)
