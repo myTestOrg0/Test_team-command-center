@@ -89,7 +89,7 @@ variable "default_branch_protection" {
 ################################ DO NOT CHANGE! ########################################
 variable "teams" {
   type = list(object({
-    team_name    = string
+    name    = string
     # write --> push
     # read -->  pull
     # admin --> admin
@@ -100,8 +100,8 @@ variable "teams" {
 #######################################################################################
   default = [
     {
-      team_name    = "test_team"
-      permission = "admin"
+      name    = "test_team"
+      permission = "push"
       repository = ["NewRepoFor"]
     }
   ]
