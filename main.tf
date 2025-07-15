@@ -249,7 +249,7 @@ resource "github_repository_collaborators" "repo_collaborators" {
   dynamic "team" {
     for_each = each.value.teams
     content {
-      team_id    = data.github_team.team_id[team.value.team_name].id
+      team_id    = data.github_team.team_id[team.value.name].id
       permission = team.value.permission
     }
   }
