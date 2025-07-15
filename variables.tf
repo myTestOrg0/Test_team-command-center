@@ -100,7 +100,7 @@ variable "teams" {
 #######################################################################################
   default = [
     {
-      team_id    = "test_team"
+      team_name    = "test_team"
       permission = "push"
       repository = ["NewRepoFor"]
     }
